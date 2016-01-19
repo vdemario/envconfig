@@ -491,3 +491,36 @@ func (b *bracketed) Decode(value string) error {
 	*b = bracketed("[" + value + "]")
 	return nil
 }
+
+func TestNoPrefix(t *testing.T) {
+	var s Specification
+	os.Clearenv()
+	os.Setenv("DEBUG", "true")
+	os.Setenv("PORT", "8080")
+	os.Setenv("RATE", "0.5")
+	os.Setenv("USER", "Kelsey")
+	os.Setenv("SERVICE_HOST", "127.0.0.1")
+	os.Setenv("REQUIREDVAR", "foo")
+	err := Process("", &s)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if s.NoPrefixWithAlt != "127.0.0.1" {
+		t.Errorf("expected %v, got %v", "127.0.0.1", s.NoPrefixWithAlt)
+	}
+	if !s.Debug {
+		t.Errorf("expected %v, got %v", true, s.Debug)
+	}
+	if s.Port != 8080 {
+		t.Errorf("expected %d, got %v", 8080, s.Port)
+	}
+	if s.Rate != 0.5 {
+		t.Errorf("expected %f, got %v", 0.5, s.Rate)
+	}
+	if s.User != "Kelsey" {
+		t.Errorf("expected %s, got %s", "Kelsey", s.User)
+	}
+	if s.RequiredVar != "foo" {
+		t.Errorf("expected %s, got %s", "foo", s.RequiredVar)
+	}
+}
